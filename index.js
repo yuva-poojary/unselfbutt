@@ -20,123 +20,99 @@ var location = config.snipLocation
 
 function checkForUpdate () {
   var options = {
-    url: 'https://raw.githubusercontent.com/Noculi/selfbutt/master/package.json',
+    url: 'https://raw.githubusercontent.com/Noculi/unselfbutt/master/package.json',
     method: 'GET',
     headers: {
       'Accept': 'application/json',
       'Accept-Charset': 'utf-8',
-      'User-Agent': 'selfbutt-noculi/' + packageJSON.version
+      'User-Agent': 'unselfbutt-noculi/' + packageJSON.version
     }
   }
   request(options, function (err, res, body) {
     if (err) throw err
     let json = JSON.parse(body)
     if (packageJSON.version === json.version) {
-      webLogger('SelfButt is up to date!')
+      webLogger('UnSelfButt is up to date!')
       webLogger('Ready!')
     } else {
-      webLogger('There is a new update for SelfButt!')
+      webLogger('There is a new update for UnSelfButt!')
       webLogger('Ready! (But you should update)')
     }
   })
 }
 
 bot.on('messageCreate', (msg) => {
-  if (msg.author.id === ownerID) {
-    if (msg.content === prefix + 'ping') {
-      bot.createMessage(msg.channel.id, {
-        embed: {
-          title: 'Hey!',
-          description: "I'm alive, don't worry!",
-          author: {
-            name: msg.author.username,
-            icon_url: msg.author.avatarURL
-          },
-          color: 0x008000,
-          footer: {
-            text: 'SelfButt ' + packageJSON.version + ' by Noculi'
-          }
+  if (msg.content === prefix + 'ping') {
+    bot.createMessage(msg.channel.id, {
+      embed: {
+        title: 'Hey!',
+        description: "I'm alive, don't worry!",
+        author: {
+          name: bot.user.username,
+          icon_url: bot.user.avatarURL
+        },
+        color: 0x008000,
+        footer: {
+          text: config.name + ' ' + packageJSON.version
         }
-      })
-    } else if (msg.content === prefix + 'loadSong') {
-      fs.readFile(location, 'utf8', function (err, data) {
-        if (err) throw err
-        webLogger(data)
-        writeSongTxt(data)
-        bot.editStatus({name: '🎶 ' + data, type: 0})
-        logItPls('Song updated to ' + data)
+      }
+    })
+  } else if (msg.content.startsWith(prefix + 'google')) {
+    var searchCommand = prefix + 'google'
+    if (msg.content.length <= searchCommand.length + 1) {
+      bot.createMessage(msg.channel.id, 'Please specify a search term.')
+      return
+    }
+    var filename = msg.content.substring(searchCommand.length + 1)
+    google.resultsPerPage = 25
+    var nextCounter = 0
+    google(filename, function (err, res) {
+      if (err) throw err
+      bot.createMessage(msg.channel.id, 'Here are the top 4 results!')
+      for (var i = 0; i < res.links.length; ++i) {
+        var link = res.links[i]
         bot.createMessage(msg.channel.id, {
           embed: {
-            title: 'Hey!',
-            description: "I'll go ahead and do that really quickly! (Song name is '" + data + "')",
+            title: link.title + ' - ' + link.href,
+            description: link.description + '\n',
             author: {
-              name: msg.author.username,
-              icon_url: msg.author.avatarURL
+              name: 'Google Search',
+              icon_url: 'https://s-media-cache-ak0.pinimg.com/736x/66/00/18/6600188f65aa2e4cc2cd29017cb27662.jpg'
             },
             color: 0x008000,
             footer: {
-              text: 'SelfButt ' + packageJSON.version + ' by Noculi'
+              text: config.name + ' ' + packageJSON.version
             }
           }
         })
-      })
-    } else if (msg.content.startsWith(prefix + 'google')) {
-      var searchCommand = prefix + 'google'
-      if (msg.content.length <= searchCommand.length + 1) {
-        bot.createMessage(msg.channel.id, 'Please specify a search term.')
-        return
+        if (i === 3) {
+          return
+        }
       }
-      var filename = msg.content.substring(searchCommand.length + 1)
-      google.resultsPerPage = 25
-      var nextCounter = 0
-      google(filename, function (err, res) {
-        if (err) throw err
-        bot.createMessage(msg.channel.id, 'Here are the top 4 results!')
-        for (var i = 0; i < res.links.length; ++i) {
-          var link = res.links[i]
-          bot.createMessage(msg.channel.id, {
-            embed: {
-              title: link.title + ' - ' + link.href,
-              description: link.description + '\n',
-              author: {
-                name: 'Google Search',
-                icon_url: 'https://s-media-cache-ak0.pinimg.com/736x/66/00/18/6600188f65aa2e4cc2cd29017cb27662.jpg'
-              },
-              color: 0x008000,
-              footer: {
-                text: 'SelfButt ' + packageJSON.version + ' by Noculi'
-              }
-            }
-          })
-          if (i === 3) {
-            return
-          }
+      if (nextCounter < 4) {
+        nextCounter += 1
+        if (res.next) res.next()
+      }
+    })
+  } else if (msg.content === prefix + 'searchSong') {
+    fs.readFile(location, 'utf8', function (err, data) {
+      if (err) throw err
+    })
+  } else if (msg.content === prefix + 'about') {
+    bot.createMessage(msg.channel.id, {
+      embed: {
+        title: 'Hey!',
+        description: "I'm a simple bot made by Noculi! You can find more infomation about me over at http://www.xn--5o8hui.cf/unselfbutt/",
+        author: {
+          name: bot.user.username,
+          icon_url: bot.user.avatarURL
+        },
+        color: 0x008000,
+        footer: {
+          text: config.name + ' ' + packageJSON.version
         }
-        if (nextCounter < 4) {
-          nextCounter += 1
-          if (res.next) res.next()
-        }
-      })
-    } else if (msg.content === prefix + 'searchSong') {
-      fs.readFile(location, 'utf8', function (err, data) {
-        if (err) throw err
-      })
-    } else if (msg.content === prefix + 'about') {
-      bot.createMessage(msg.channel.id, {
-        embed: {
-          title: 'Hey!',
-          description: "I'm a simple SelfBot made by Noculi! You can find more infomation about me over at https://noculi.github.io/selfbutt/",
-          author: {
-            name: msg.author.username,
-            icon_url: msg.author.avatarURL
-          },
-          color: 0x008000,
-          footer: {
-            text: 'SelfButt ' + packageJSON.version + ' by Noculi'
-          }
-        }
-      })
-    }
+      }
+    })
   }
 })
 
@@ -163,31 +139,6 @@ bot.on('messageCreate', (msg) => {
   }
 })
 
-setInterval(function () {
-  fs.readFile('./lastsong.txt', 'utf8', function (err, lastSong) {
-    if (err) throw err
-    fs.readFile(location, 'utf8', function (err, data) {
-      if (err) throw err
-      if (lastSong === data) {
-        webLogger('Song was already ' + data + '. Skipping change.')
-      } else {
-        writeSongTxt(data)
-        webLogger('Song updated to "' + data + '"')
-        bot.editStatus({name: '🎶 ' + data, type: 0})
-        logItPls('Song updated to ' + data)
-      }
-    })
-  })
-}, 15000)
-
-function writeSongTxt (song) {
-  fs.writeFile('./lastsong.txt', song, function (err) {
-    if (err) {
-      return webLogger(err)
-    }
-  })
-}
-
 function writeLogsTxt (data) {
   fs.writeFile('./logs.txt', data, function (err) {
     if (err) {
@@ -203,7 +154,7 @@ function logItPls (whathappened) {
       description: whathappened,
       color: 0x008000,
       footer: {
-        text: 'SelfButt ' + packageJSON.version + ' by Noculi'
+        text: config.name + ' ' + packageJSON.version
       }
     }
   })
@@ -228,13 +179,13 @@ function webLogger (data) {
 app.use(express.static('public'))
 
 app.get('/apiV1/shutdown', function (req, res) {
-  webLogger('Shutting down SelfButt.')
+  webLogger('Shutting down UnSelfButt.')
   res.send('<h1>Server has caught fire</h1><br /><i>Same thing as shutting down right?</i><br /><img src="https://i.imgur.com/daF13vl.gif" />')
   process.exit(0)
 })
 
 app.get('/apiV1/reboot', function (req, res) {
-  res.send('Rebooting. <a href="http://localhost:3000/">Click here to go back to the dashboard</a>')
+  res.send('Rebooting. <a href="http://localhost:' + config.port + '/">Click here to go back to the dashboard</a>')
   startNet()
   process.exit(0)
 })
@@ -258,26 +209,16 @@ app.get('/apiV1/logs', function (req, res) {
 })
 
 app.get('/apiV1/info', function (req, res) {
-  fs.readFile(location, 'utf8', function (err, data) {
-    if (err) throw err
-    var finalRes = '{' + '"version":"' + packageJSON.version + '",' + '"currentSong":"' + data + '",' + '"totalGuilds":"' + bot.guilds.size + '",' + '"totalChannels":"' + Object.keys(bot.channelGuildMap).length + '",' + '"onlineUsers":"' + bot.users.size + '"}'
-    res.send(finalRes)
-  })
+  var finalRes = '{' + '"name":"' + config.name + '",' + '"version":"' + packageJSON.version + '",' + '"totalGuilds":"' + bot.guilds.size + '",' + '"totalChannels":"' + Object.keys(bot.channelGuildMap).length + '",' + '"onlineUsers":"' + bot.users.size + '"}'
+  res.send(finalRes)
 })
 
-app.listen(3000, function () {
-  webLogger('You can manage your bot over at "http://localhost:3000"')
+app.listen(config.port, function () {
+  webLogger('You can manage your bot over at "http://localhost:' + config.port + '"')
 })
 
-process.title = 'SelfButt'
-if (fs.existsSync('./lastsong.txt')) {
-  checkForUpdate()
-  writeLogsTxt('')
-} else {
-  logItPls("Looks like you're new to SelfButt! You can take a look on the wiki for commands!")
-  writeSongTxt('SelfButt First Boot')
-  writeLogsTxt('')
-  checkForUpdate()
-}
+process.title = 'UnSelfButt'
+writeLogsTxt('')
+checkForUpdate()
 
 bot.connect()

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>SelfButt Admin</title>
+<title>UnSelfButt Admin</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -17,8 +17,8 @@
 
 <!--Header-part-->
 <div id="header">
-  <h3 style="padding-top: 5px; padding-left: 50px; color: white">SelfButt</h3> 
-  <h4 id="selfbuttVersion" style="top: -15px; position: relative; padding-left: 80px; color: white">0.0.0</h4>
+  <h3 id="unSelfButtName" style="padding-top: 5px; padding-left: 50px; color: white">SelfButt</h3> 
+  <h4 id="unSelfButtVerison" style="top: -15px; position: relative; padding-left: 80px; color: white">0.0.0</h4>
 </div>
 <!--close-Header-part--> 
 
@@ -64,16 +64,22 @@
                   <td><div class="form-group"><input type="password" class="form-control" id="token"></div></td>
                 </tr>
                 <tr class="odd gradeX">
+                  <td>port</td>
+                  <td id="port">Internet
+                    Explorer 4.0</td>
+                  <td><div class="form-group"><input type="text" class="form-control" id="port"></div></td>
+                </tr>
+                <tr class="odd gradeX">
+                  <td>name</td>
+                  <td id="name">Internet
+                    Explorer 4.0</td>
+                  <td><div class="form-group"><input type="text" class="form-control" id="name"></div></td>
+                </tr>
+                <tr class="odd gradeX">
                   <td>prefix</td>
                   <td id="prefix">Internet
                     Explorer 4.0</td>
                   <td><div class="form-group"><input type="text" class="form-control" id="prefix"></div></td>
-                </tr>
-                <tr class="odd gradeX">
-                  <td>snipLocation</td>
-                  <td id="snipLocation">Internet
-                    Explorer 4.0</td>
-                  <td><div class="form-group"><input type="text" class="form-control" id="snipLocation"></div></td>
                 </tr>
                 <tr class="odd gradeX">
                   <td>ownerID</td>
@@ -128,11 +134,6 @@
                   <td>index.js</td>
                   <td>Yes</td>
                 </tr>
-                <tr class="loadSong">
-                  <td>loadSong</td>
-                  <td>index.js</td>
-                  <td>Yes</td>
-                </tr>
                 <tr class="google">
                   <td>google</td>
                   <td>index.js</td>
@@ -168,12 +169,15 @@
 
 <script>
 var jsonData = {}
-$.getJSON('http://localhost:3000/apiV1/info', function(data) {
-  jsonData = data
-  $('#selfbuttVersion').text(jsonData.version)
-})
-var jsonData = {}
-$.getJSON('http://localhost:3000/apiV1/config', function(data) {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
+      jsonData = data
+      $('#unSelfButtVerison').text(jsonData.version)
+    })
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
+      jsonData = data
+      $('#unSelfButtName').text(jsonData.name)
+    })
+$.getJSON('http://localhost:4000/apiV1/config', function(data) {
   jsonData = data
   var token = jsonData.token
   var prefix = jsonData.prefix
@@ -189,6 +193,8 @@ $.getJSON('http://localhost:3000/apiV1/config', function(data) {
   $('#logChannel').text(logChannel)
   $('#chatLogging').text(chatLogging)
   $('#discogsToken').text(discogsToken)
+  $('#port').text(jsonData.port)
+  $('#name').text(jsonData.name)
 })
 </script>
 </body>

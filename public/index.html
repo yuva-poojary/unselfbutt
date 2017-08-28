@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>SelfButt Admin</title>
+<title>UnSelfButt Admin</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -17,8 +17,8 @@
 
 <!--Header-part-->
 <div id="header">
-  <h3 style="padding-top: 5px; padding-left: 50px; color: white">SelfButt</h3> 
-  <h4 id="selfbuttVersion" style="top: -15px; position: relative; padding-left: 80px; color: white">0.0.0</h4>
+  <h3 id="unSelfButtName" style="padding-top: 5px; padding-left: 50px; color: white">SelfButt</h3> 
+  <h4 id="unSelfButtVerison" style="top: -15px; position: relative; padding-left: 80px; color: white">0.0.0</h4>
 </div>
 <!--close-Header-part--> 
 
@@ -49,8 +49,8 @@
   <div class="container-fluid" >
     <div class="quick-actions_homepage">
       <ul class="site-stats">
-        <li class="bg_lr"> <a href="http://localhost:3000/apiV1/shutdown" style="color: white"> <i class="icon-fire"></i> Shutdown</a></li>
-        <li class="bg_lg"> <a href="http://localhost:3000/apiV1/reboot" style="color: white"> <i class="icon-refresh"></i> Restart</a> </li>
+        <li class="bg_lr"> <a href="http://localhost:4000/apiV1/shutdown" style="color: white"> <i class="icon-fire"></i> Shutdown</a></li>
+        <li class="bg_lg"> <a href="http://localhost:4000/apiV1/reboot" style="color: white"> <i class="icon-refresh"></i> Restart</a> </li>
       </ul>
     </div>
 <!--End-Action boxes--> 
@@ -66,7 +66,7 @@
             <div class="span12">
               <ul class="site-stats">	
                 <li class="bg_lh"><i class="icon-user"></i> <strong id="numberUsers">AAAAA</strong> <small>Users</small></li>
-                <li class="bg_lh"><i class="icon-music"></i> <strong id="lastsong">AAAAA</strong> <small>Current Song </small></li>
+                <li class="bg_lh"><i class="icon-music"></i> <strong id="lastsong">wait a second we don't need this</strong> <small>Current Song </small></li>
                 <li class="bg_lh"><i class="icon-globe"></i> <strong id="numberGuilds">AAAAA</strong> <small>Guilds</small></li>
                 <li class="bg_lh"><i class="icon-tag"></i> <strong id="numberChannels">OH GOD IT BURNS</strong> <small>Channels</small></li>
               </ul>
@@ -127,54 +127,52 @@
 
 <script type="text/javascript">
   function loadLogs () {
-    $('#chat-messages').load('http://localhost:3000/apiV1/logs')
+    $('#chat-messages').load('http://localhost:4000/apiV1/logs')
    }
   var jsonData = {}
-  function loadSongs () {
-    $.getJSON('http://localhost:3000/apiV1/info', function(data) {
-      jsonData = data
-      $('#lastsong').text(jsonData.currentSong)
-    })
-  }
   function loadUsers () {
-    $.getJSON('http://localhost:3000/apiV1/info', function(data) {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
       jsonData = data
       $('#numberUsers').text(jsonData.onlineUsers)
     })
   }
   function loadGuilds () {
-    $.getJSON('http://localhost:3000/apiV1/info', function(data) {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
       jsonData = data
       $('#numberGuilds').text(jsonData.totalGuilds)
     })
   }
   function loadChannels () {
-    $.getJSON('http://localhost:3000/apiV1/info', function(data) {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
       jsonData = data
       $('#numberChannels').text(jsonData.totalChannels)
     })
   }
   function loadVersion () {
-    $.getJSON('http://localhost:3000/apiV1/info', function(data) {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
       jsonData = data
-      $('#selfbuttVersion').text(jsonData.version)
+      $('#unSelfButtVerison').text(jsonData.version)
+    })
+  }
+  function loadName () {
+    $.getJSON('http://localhost:4000/apiV1/info', function(data) {
+      jsonData = data
+      $('#unSelfButtName').text(jsonData.name)
     })
   }
   setInterval(function () {
 	loadLogs()
-    loadSongs()
     loadUsers()
     loadGuilds()
     loadChannels()
   }, 5000)
   loadLogs()
-  loadSongs()
   loadUsers()
   loadGuilds()
   loadChannels()
   loadVersion()
+  loadName()
 </script>
-
 
 </body>
 </html>

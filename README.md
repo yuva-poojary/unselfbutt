@@ -1,7 +1,7 @@
 <div align="center">
-  <h1 align="center">SelfButt</h1>
+  <h1 align="center">UnSelfButt</h1>
 	<p align="center">
-		<strong>A Discord SelfBot made with Eris and following the Javascript Standard.</strong>
+		<strong>A Discord Bot made with Eris and following the Javascript Standard based on SelfButt.</strong>
 	</p>
 	<br/>
 	<br/>
@@ -10,11 +10,11 @@
 	</p>
   <br>
   <p align="center">
-    <a href="https://circleci.com/gh/Noculi/selfbutt"><img src="https://circleci.com/gh/Noculi/selfbutt/tree/master.svg?style=svg&circle-token=a9d3bb657f2bff6ca4ffdbf125ceaf902f969a1f"></a>
+    <a href="https://circleci.com/gh/Noculi/unselfbutt"><img src="https://circleci.com/gh/Noculi/unselfbutt.svg?style=svg"></a>
 	</p>
   <br>
   <p align="center">
-    <a href='https://gemnasium.com/github.com/Noculi/selfbutt'><img src="https://gemnasium.com/badges/github.com/Noculi/selfbutt.svg" alt="Dependency Status" /></a>
+    <a href='https://gemnasium.com/github.com/Noculi/unselfbutt'><img src="https://gemnasium.com/badges/github.com/Noculi/unselfbutt.svg" alt="Dependency Status" /></a>
 	</p>
   <br>
 </div>
@@ -22,7 +22,6 @@
 Current Features
 ------	
 * UI Control Panel
-* Automatic Song Updating with Logging
 * Google Searching
 * Chat Logging
 
@@ -33,10 +32,7 @@ To-Do
   - [X] Stats
   - [X] Logs
   - [ ] Config
-- [X] Song Updates
-	- [X] Song Update Logging
-	- [X] Manual Song Updates
-	- [ ] Song Search
+- [ ] Song Search
 - [ ] Custom Command Support
 
 Starting it up
