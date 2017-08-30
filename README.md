@@ -24,6 +24,7 @@ Current Features
 * UI Control Panel
 * Google Searching
 * Chat Logging
+* Custom Command Support
 
 To-Do
 ------
@@ -33,11 +34,10 @@ To-Do
   - [X] Logs
   - [ ] Config
 - [ ] Song Search
-- [ ] Custom Command Support
 
 Starting it up
 ------
 1. Do `npm install` to get all required modules
 2. Copy and rename example-config.json to config.json
 3. Fill out the elements in config.json
-4. Do `npm start` and go to https://localhost:3000
+4. Do `npm start` and go to https://localhost:4000

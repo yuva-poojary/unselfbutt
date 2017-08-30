@@ -7,14 +7,52 @@ const google = require('google')
 const request = require('request')
 const express = require('express')
 const app = express()
+const pathModule = require('path')
 // const Discogs = require('discogs-client')
 const packageJSON = require('./package.json')
+
+// Spoopy
+var commands = []
+
+function LoadModules (path) {
+  fs.lstat(path, function (err, stat) {
+    if (err) {
+      return webLogger(err)
+    }
+    if (stat.isDirectory()) {
+      // we have a directory: do a tree walk
+      fs.readdir(path, function (err, files) {
+        if (err) {
+          return webLogger(err)
+        }
+        var f = files.length
+        var l = files.length
+        for (var i = 0; i < l; i++) {
+          f = pathModule.join(path, files[i])
+          var arrayPls = f.replace('.js', '')
+          var arrayPls = arrayPls.replace(pathModule.join(__dirname, 'commands'), '')
+          var arrayPls = arrayPls.replace(/\\/g, '')
+          var arrayPls = arrayPls.replace('/', '')
+          commands.push(' ' + arrayPls)
+          LoadModules(f)
+        }
+      })
+    } else {
+      // we have a file: load it
+      require(path)(moduleHolder)
+    }
+  })
+}
+
+var DIR = pathModule.join(__dirname, 'commands')
+LoadModules(DIR)
+var moduleHolder = {}
+exports.moduleHolder = moduleHolder
 
 // Load Config
 var config = require('./config.json')
 
 var bot = new Eris(config.token)
-var ownerID = config.ownerID
 var prefix = config.prefix
 var location = config.snipLocation
 
@@ -42,78 +80,28 @@ function checkForUpdate () {
 }
 
 bot.on('messageCreate', (msg) => {
-  if (msg.content === prefix + 'ping') {
-    bot.createMessage(msg.channel.id, {
-      embed: {
-        title: 'Hey!',
-        description: "I'm alive, don't worry!",
-        author: {
-          name: bot.user.username,
-          icon_url: bot.user.avatarURL
-        },
-        color: 0x008000,
-        footer: {
-          text: config.name + ' ' + packageJSON.version
-        }
-      }
-    })
-  } else if (msg.content.startsWith(prefix + 'google')) {
-    var searchCommand = prefix + 'google'
-    if (msg.content.length <= searchCommand.length + 1) {
-      bot.createMessage(msg.channel.id, 'Please specify a search term.')
-      return
-    }
-    var filename = msg.content.substring(searchCommand.length + 1)
-    google.resultsPerPage = 25
-    var nextCounter = 0
-    google(filename, function (err, res) {
-      if (err) throw err
-      bot.createMessage(msg.channel.id, 'Here are the top 4 results!')
-      for (var i = 0; i < res.links.length; ++i) {
-        var link = res.links[i]
-        bot.createMessage(msg.channel.id, {
-          embed: {
-            title: link.title + ' - ' + link.href,
-            description: link.description + '\n',
-            author: {
-              name: 'Google Search',
-              icon_url: 'https://s-media-cache-ak0.pinimg.com/736x/66/00/18/6600188f65aa2e4cc2cd29017cb27662.jpg'
-            },
-            color: 0x008000,
-            footer: {
-              text: config.name + ' ' + packageJSON.version
-            }
-          }
-        })
-        if (i === 3) {
+    if (msg.content.startsWith(prefix)) {
+      if (msg.content === prefix + 'help') {
+        bot.createMessage(msg.channel.id, "Hey I'm " + config.name + ' ' + packageJSON.version)
+        bot.createMessage(msg.channel.id, 'Here are all the commands that can be used')
+        bot.createMessage(msg.channel.id, '`' + commands + '`')
+        bot.createMessage(msg.channel.id, 'You can use these commands by doing `' + prefix + '<command> <args>`')
+      } else {
+        var watCom = prefix
+        if (msg.content.length === watCom.length) {
           return
         }
-      }
-      if (nextCounter < 4) {
-        nextCounter += 1
-        if (res.next) res.next()
-      }
-    })
-  } else if (msg.content === prefix + 'searchSong') {
-    fs.readFile(location, 'utf8', function (err, data) {
-      if (err) throw err
-    })
-  } else if (msg.content === prefix + 'about') {
-    bot.createMessage(msg.channel.id, {
-      embed: {
-        title: 'Hey!',
-        description: "I'm a simple bot made by Noculi! You can find more infomation about me over at http://www.xn--5o8hui.cf/unselfbutt/",
-        author: {
-          name: bot.user.username,
-          icon_url: bot.user.avatarURL
-        },
-        color: 0x008000,
-        footer: {
-          text: config.name + ' ' + packageJSON.version
+        var commandFound = msg.content.substring(watCom.length)
+        var actualCommand = commandFound.split(' ')
+        var preArgCommand = prefix + actualCommand[0]
+        var args = msg.content.substring(preArgCommand.length + 1)
+        try {
+          moduleHolder[actualCommand[0]](bot, msg, args)
+        } catch (err) {
+          webLogger(err)
         }
       }
-    })
-  }
+    }
 })
 
 bot.on('messageCreate', (msg) => {
@@ -147,18 +135,6 @@ function writeLogsTxt (data) {
   })
 }
 
-function logItPls (whathappened) {
-  bot.createMessage(config.logChannel, {
-    embed: {
-      title: 'Hey! Look a log!',
-      description: whathappened,
-      color: 0x008000,
-      footer: {
-        text: config.name + ' ' + packageJSON.version
-      }
-    }
-  })
-}
 function startNet () {
   var spawn = require('child_process').spawn
   var child = spawn('node', ['index.js'], {
@@ -172,9 +148,12 @@ function webLogger (data) {
   var time = '[' + moment().format('MMMM Do YYYY, h:mm:ss a')
   var finalMessage = time + '] ' + data + os.EOL
   fs.appendFile('./logs.txt', finalMessage, function (err) {
-    if (err) throw err
+    if (err) {
+      return webLogger(err)
+    }
   })
 }
+
 
 app.use(express.static('public'))
 
@@ -200,6 +179,11 @@ app.get('/apiV1/config', function (req, res) {
     res.send(data)
   })
 })
+
+app.get('/apiV1/commands', function (req, res) {
+  res.send(commands)
+})
+
 
 app.get('/apiV1/logs', function (req, res) {
   fs.readFile('./logs.txt', 'utf8', function (err, data) {

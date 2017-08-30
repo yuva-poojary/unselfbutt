@@ -120,30 +120,9 @@
                 <tr>
                   <th>Command Name</th>
                   <th>Loaded From</th>
-                  <th>Enabled</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="about">
-                  <td>about</td>
-                  <td>index.js</td>
-                  <td>Yes</td>
-                </tr>
-                <tr class="ping">
-                  <td>ping</td>
-                  <td>index.js</td>
-                  <td>Yes</td>
-                </tr>
-                <tr class="google">
-                  <td>google</td>
-                  <td>index.js</td>
-                  <td>Yes</td>
-                </tr>
-                <tr class="searchSong">
-                  <td>searchSong</td>
-                  <td>index.js</td>
-                  <td>No</td>
-                </tr>
+              <tbody id="heyTable">
               </tbody>
             </table>
           </div>
@@ -196,6 +175,13 @@ $.getJSON('http://localhost:4000/apiV1/config', function(data) {
   $('#port').text(jsonData.port)
   $('#name').text(jsonData.name)
 })
+
+$.getJSON('http://localhost:4000/apiV1/commands', function(data) {
+  for (x = 0; x < data.length; x++) {
+    document.getElementById('heyTable').innerHTML += '<tr><td>' + data[x] + '</td><td>commands</td></tr>'
+  }
+})
+
 </script>
 </body>
 </html>
